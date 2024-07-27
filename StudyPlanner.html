@@ -40,6 +40,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin: 5px;
         }
         button:hover {
             background-color: #0056b3;
@@ -67,11 +68,27 @@
         .delete-btn:hover {
             background-color: #c82333;
         }
+        #clock {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        #timer {
+            font-size: 24px;
+            margin-bottom: 20px;
+            background-color: #e0f7fa;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #007bff;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Study Planner</h1>
+        <div id="clock"></div>
+        <div id="timer">00:00:00</div>
+        <button onclick="startTimer()">Start Timer</button>
+        <button onclick="stopTimer()">Stop Timer</button>
         <input type="text" id="task" placeholder="Enter your study task">
         <input type="date" id="date">
         <input type="time" id="time">
@@ -79,6 +96,39 @@
         <ul id="task-list"></ul>
     </div>
     <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const clock = document.getElementById('clock');
+            clock.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        let timerInterval;
+        let elapsedSeconds = 0;
+
+        function startTimer() {
+            if (timerInterval) return; // Prevent multiple intervals
+
+            timerInterval = setInterval(() => {
+                elapsedSeconds++;
+                const hours = String(Math.floor(elapsedSeconds / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((elapsedSeconds % 3600) / 60)).padStart(2, '0');
+                const seconds = String(elapsedSeconds % 60).padStart(2, '0');
+                const timer = document.getElementById('timer');
+                timer.textContent = `${hours}:${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
         function addTask() {
             const taskInput = document.getElementById('task');
             const dateInput = document.getElementById('date');
