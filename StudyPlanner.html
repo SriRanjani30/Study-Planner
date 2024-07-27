@@ -5,17 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Planner</title>
     <style>
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
+        /* General Styles */
         body {
             font-family: 'Arial', sans-serif;
             background-image: url('https://www.transparenttextures.com/patterns/connected.png');
@@ -26,7 +16,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            animation: fadeIn 2s;
+            transition: background-color 0.3s;
         }
 
         .container {
@@ -36,7 +26,7 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             width: 350px;
             text-align: center;
-            animation: fadeIn 2s;
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
 
         h1 {
@@ -46,13 +36,13 @@
             animation: pulse 2s infinite;
         }
 
-        input[type="text"], input[type="date"], input[type="time"] {
+        input[type="text"], input[type="date"], input[type="time"], textarea {
             width: calc(100% - 20px);
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-            animation: fadeIn 2s;
+            transition: border-color 0.3s;
         }
 
         button {
@@ -64,7 +54,6 @@
             cursor: pointer;
             margin: 5px;
             transition: background-color 0.3s;
-            animation: fadeIn 2s;
         }
 
         button:hover {
@@ -74,7 +63,6 @@
         ul {
             list-style: none;
             padding: 0;
-            animation: fadeIn 2s;
         }
 
         li {
@@ -105,20 +93,21 @@
             background-color: #c82333;
         }
 
-        #clock {
-            font-size: 18px;
+        #clock, #timer {
             margin-bottom: 20px;
             animation: fadeIn 2s;
         }
 
+        #clock {
+            font-size: 18px;
+        }
+
         #timer {
             font-size: 24px;
-            margin-bottom: 20px;
             background-color: #e0f7fa;
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #007bff;
-            animation: fadeIn 2s;
         }
 
         #tips {
@@ -130,7 +119,6 @@
             font-size: 20px;
             color: #007bff;
             margin-bottom: 10px;
-            animation: fadeIn 2s;
         }
 
         #tips ul {
@@ -139,27 +127,78 @@
 
         #tips li {
             margin-bottom: 10px;
-            animation: fadeIn 2s;
         }
 
-        #reminder-section {
+        #reminder-section, #notes-section {
             margin-top: 20px;
             text-align: left;
-            animation: fadeIn 2s;
         }
 
-        #reminder-section h2 {
+        #reminder-section h2, #notes-section h2 {
             font-size: 20px;
             color: #007bff;
             margin-bottom: 10px;
         }
 
+        #theme-selector {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #theme-selector label {
+            margin-right: 10px;
+            font-size: 16px;
+            color: #007bff;
+        }
+
+        /* Theme Styles */
+        .theme-light {
+            background-color: #f0f8ff;
+            color: #000;
+        }
+
+        .theme-dark {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .theme-blue {
+            background-color: #e0f7fa;
+            color: #007bff;
+        }
+
+        .theme-green {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+
         audio {
             display: none;
         }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
-<body>
+<body class="theme-light">
     <div class="container">
         <h1>Study Planner</h1>
         <div id="clock"></div>
@@ -178,6 +217,22 @@
             <input type="date" id="reminder-date">
             <input type="time" id="reminder-time">
             <button onclick="addReminder()">Add Reminder</button>
+        </div>
+
+        <div id="notes-section">
+            <h2>Notes</h2>
+            <textarea id="notes" placeholder="Enter your notes here" rows="4"></textarea>
+            <button onclick="saveNotes()">Save Notes</button>
+        </div>
+
+        <div id="theme-selector">
+            <label>Select Theme:</label>
+            <select id="theme" onchange="changeTheme(event)">
+                <option value="theme-light">Light</option>
+                <option value="theme-dark">Dark</option>
+                <option value="theme-blue">Blue</option>
+                <option value="theme-green">Green</option>
+            </select>
         </div>
 
         <div id="tips">
@@ -264,21 +319,21 @@
             const reminderTime = document.getElementById('reminder-time').value;
 
             if (reminderText === '' || reminderDate === '' || reminderTime === '') {
-                alert('Please fill in all fields to set a reminder');
+                alert('Please fill in all fields');
                 return;
             }
 
-            const reminderTimeValue = new Date(`${reminderDate}T${reminderTime}`);
+            const reminderDateTime = new Date(`${reminderDate}T${reminderTime}`);
             const now = new Date();
 
-            if (reminderTimeValue > now) {
-                const timeDifference = reminderTimeValue - now;
+            if (reminderDateTime > now) {
+                const timeUntilReminder = reminderDateTime - now;
                 setTimeout(() => {
                     alert(`Reminder: ${reminderText}`);
                     document.getElementById('notification-sound').play();
-                }, timeDifference);
+                }, timeUntilReminder);
 
-                alert(`Reminder set for ${reminderDate} ${reminderTime}`);
+                alert(`Reminder set for ${reminderDate} at ${reminderTime}`);
             } else {
                 alert('Reminder time is in the past. Please set a future time.');
             }
@@ -287,6 +342,51 @@
             document.getElementById('reminder-date').value = '';
             document.getElementById('reminder-time').value = '';
         }
+
+        function saveNotes() {
+            const notes = document.getElementById('notes').value;
+            localStorage.setItem('studyNotes', notes);
+            alert('Notes saved!');
+        }
+
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('studyNotes');
+            if (savedNotes) {
+                document.getElementById('notes').value = savedNotes;
+            }
+        }
+
+        function changeTheme(event) {
+            const theme = event.target.value;
+            document.body.className = theme;
+        }
+
+        window.onload = loadNotes;
+
+        // Animation Keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
