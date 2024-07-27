@@ -5,34 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Planner</title>
     <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://www.transparenttextures.com/patterns/connected.png');
             background-color: #f0f8ff;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            animation: fadeIn 2s;
         }
+
         .container {
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 350px;
             text-align: center;
+            animation: fadeIn 2s;
         }
+
         h1 {
             margin-bottom: 20px;
-            font-size: 24px;
+            font-size: 26px;
+            color: #007bff;
+            animation: pulse 2s infinite;
         }
+
         input[type="text"], input[type="date"], input[type="time"] {
             width: calc(100% - 20px);
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
+            animation: fadeIn 2s;
         }
+
         button {
             padding: 10px 20px;
             background-color: #007bff;
@@ -41,21 +63,30 @@
             border-radius: 5px;
             cursor: pointer;
             margin: 5px;
+            transition: background-color 0.3s;
+            animation: fadeIn 2s;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         ul {
             list-style: none;
             padding: 0;
+            animation: fadeIn 2s;
         }
+
         li {
             background-color: #f9f9f9;
             margin: 10px 0;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            text-align: left;
+            position: relative;
         }
+
         .delete-btn {
             background-color: #dc3545;
             color: white;
@@ -63,15 +94,23 @@
             padding: 5px 10px;
             cursor: pointer;
             border-radius: 5px;
-            float: right;
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            transition: background-color 0.3s;
         }
+
         .delete-btn:hover {
             background-color: #c82333;
         }
+
         #clock {
             font-size: 18px;
             margin-bottom: 20px;
+            animation: fadeIn 2s;
         }
+
         #timer {
             font-size: 24px;
             margin-bottom: 20px;
@@ -79,6 +118,44 @@
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #007bff;
+            animation: fadeIn 2s;
+        }
+
+        #tips {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #tips h2 {
+            font-size: 20px;
+            color: #007bff;
+            margin-bottom: 10px;
+            animation: fadeIn 2s;
+        }
+
+        #tips ul {
+            padding-left: 20px;
+        }
+
+        #tips li {
+            margin-bottom: 10px;
+            animation: fadeIn 2s;
+        }
+
+        #reminder-section {
+            margin-top: 20px;
+            text-align: left;
+            animation: fadeIn 2s;
+        }
+
+        #reminder-section h2 {
+            font-size: 20px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        audio {
+            display: none;
         }
     </style>
 </head>
@@ -94,6 +171,29 @@
         <input type="time" id="time">
         <button onclick="addTask()">Add Task</button>
         <ul id="task-list"></ul>
+
+        <div id="reminder-section">
+            <h2>Set Reminder</h2>
+            <input type="text" id="reminder-text" placeholder="Enter your reminder">
+            <input type="date" id="reminder-date">
+            <input type="time" id="reminder-time">
+            <button onclick="addReminder()">Add Reminder</button>
+        </div>
+
+        <div id="tips">
+            <h2>Study Tips</h2>
+            <ul>
+                <li>Set clear goals for each study session.</li>
+                <li>Take regular breaks to avoid burnout.</li>
+                <li>Create a distraction-free study environment.</li>
+                <li>Stay hydrated and eat healthy snacks.</li>
+                <li>Review your notes regularly.</li>
+                <li>Practice active learning techniques.</li>
+                <li>Stay positive and motivated.</li>
+            </ul>
+        </div>
+
+        <audio id="notification-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
     </div>
     <script>
         function updateClock() {
@@ -156,6 +256,36 @@
         function deleteTask(button) {
             const li = button.parentElement;
             li.remove();
+        }
+
+        function addReminder() {
+            const reminderText = document.getElementById('reminder-text').value;
+            const reminderDate = document.getElementById('reminder-date').value;
+            const reminderTime = document.getElementById('reminder-time').value;
+
+            if (reminderText === '' || reminderDate === '' || reminderTime === '') {
+                alert('Please fill in all fields to set a reminder');
+                return;
+            }
+
+            const reminderTimeValue = new Date(`${reminderDate}T${reminderTime}`);
+            const now = new Date();
+
+            if (reminderTimeValue > now) {
+                const timeDifference = reminderTimeValue - now;
+                setTimeout(() => {
+                    alert(`Reminder: ${reminderText}`);
+                    document.getElementById('notification-sound').play();
+                }, timeDifference);
+
+                alert(`Reminder set for ${reminderDate} ${reminderTime}`);
+            } else {
+                alert('Reminder time is in the past. Please set a future time.');
+            }
+
+            document.getElementById('reminder-text').value = '';
+            document.getElementById('reminder-date').value = '';
+            document.getElementById('reminder-time').value = '';
         }
     </script>
 </body>
