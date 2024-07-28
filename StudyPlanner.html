@@ -196,22 +196,72 @@
                 opacity: 1;
             }
         }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #007bff;
+            font-size: 22px;
+        }
+
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body class="theme-light">
     <div class="container">
         <h1>Study Planner</h1>
-        <div id="clock"></div>
-        <div id="timer">00:00:00</div>
-        <button onclick="startTimer()">Start Timer</button>
-        <button onclick="stopTimer()">Stop Timer</button>
-        <input type="text" id="task" placeholder="Enter your study task">
-        <input type="date" id="date">
-        <input type="time" id="time">
-        <button onclick="addTask()">Add Task</button>
-        <ul id="task-list"></ul>
 
-        <div id="reminder-section">
+        <!-- Google Search Bar Section -->
+        <div class="section" id="search-bar-section">
+            <h2>Google Search</h2>
+            <form class="search-bar" action="https://www.google.com/search" method="GET" target="_blank">
+                <input type="text" name="q" placeholder="Search on Google">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        
+        <!-- Clock Section -->
+        <div class="section" id="clock-section">
+            <h2>Current Time</h2>
+            <div id="clock"></div>
+        </div>
+
+        <!-- Timer Section -->
+        <div class="section" id="timer-section">
+            <h2>Study Timer</h2>
+            <div id="timer">00:00:00</div>
+            <button onclick="startTimer()">Start Timer</button>
+            <button onclick="stopTimer()">Stop Timer</button>
+        </div>
+
+        <!-- Task Section -->
+        <div class="section" id="task-section">
+            <h2>Add Task</h2>
+            <input type="text" id="task" placeholder="Enter your study task">
+            <input type="date" id="date">
+            <input type="time" id="time">
+            <button onclick="addTask()">Add Task</button>
+            <ul id="task-list"></ul>
+        </div>
+
+        <!-- Reminder Section -->
+        <div class="section" id="reminder-section">
             <h2>Set Reminder</h2>
             <input type="text" id="reminder-text" placeholder="Enter your reminder">
             <input type="date" id="reminder-date">
@@ -219,13 +269,15 @@
             <button onclick="addReminder()">Add Reminder</button>
         </div>
 
-        <div id="notes-section">
+        <!-- Notes Section -->
+        <div class="section" id="notes-section">
             <h2>Notes</h2>
             <textarea id="notes" placeholder="Enter your notes here" rows="4"></textarea>
             <button onclick="saveNotes()">Save Notes</button>
         </div>
 
-        <div id="theme-selector">
+        <!-- Theme Selector Section -->
+        <div class="section" id="theme-selector">
             <label>Select Theme:</label>
             <select id="theme" onchange="changeTheme(event)">
                 <option value="theme-light">Light</option>
@@ -235,7 +287,8 @@
             </select>
         </div>
 
-        <div id="tips">
+        <!-- Tips Section -->
+        <div class="section" id="tips">
             <h2>Study Tips</h2>
             <ul>
                 <li>Set clear goals for each study session.</li>
