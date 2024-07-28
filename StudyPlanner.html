@@ -27,18 +27,6 @@
             width: 350px;
             text-align: center;
             transition: background-color 0.3s, box-shadow 0.3s;
-            margin-right: 20px; /* Add margin to the right */
-        }
-
-        .whiteboard-container {
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            height: 500px;
-            text-align: center;
-            position: relative;
         }
 
         h1 {
@@ -234,32 +222,64 @@
             margin-right: 10px;
         }
 
-        canvas {
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            cursor: crosshair;
+        /* Menu Icon Styles */
+        .menu-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .menu-icon div {
             width: 100%;
-            height: 100%;
+            height: 4px;
+            background-color: #007bff;
+            transition: all 0.3s ease;
         }
 
-        .toolbar {
-            margin-bottom: 10px;
+        .menu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            z-index: 10;
         }
 
-        .toolbar label {
-            margin-right: 10px;
+        .menu a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #007bff;
+            border-bottom: 1px solid #ddd;
         }
 
-        .toolbar input[type="color"], .toolbar input[type="range"] {
-            margin-right: 10px;
-        }
-
-        .toolbar button {
-            margin-left: 10px;
+        .menu a:hover {
+            background-color: #f0f8ff;
         }
     </style>
 </head>
 <body class="theme-light">
+    <div class="menu-icon" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <div class="menu" id="menu">
+        <a href="whiteboard.html">Whiteboard</a>
+    </div>
+
     <div class="container">
         <h1>Study Planner</h1>
 
@@ -307,14 +327,14 @@
 
         <!-- Notes Section -->
         <div class="section" id="notes-section">
-            <h2>Study Notes</h2>
-            <textarea id="notes" placeholder="Enter your study notes" rows="5"></textarea>
+            <h2>Notes</h2>
+            <textarea id="notes" placeholder="Enter your notes here" rows="4"></textarea>
             <button onclick="saveNotes()">Save Notes</button>
         </div>
 
-        <!-- Theme Selector -->
+        <!-- Theme Selector Section -->
         <div class="section" id="theme-selector">
-            <label for="theme">Select Theme:</label>
+            <label>Select Theme:</label>
             <select id="theme" onchange="changeTheme(event)">
                 <option value="theme-light">Light</option>
                 <option value="theme-dark">Dark</option>
@@ -339,21 +359,16 @@
 
         <audio id="notification-sound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
     </div>
-
-    <!-- Whiteboard Section -->
-    <div class="whiteboard-container">
-        <h2>Whiteboard</h2>
-        <div class="toolbar">
-            <label for="color-picker">Color:</label>
-            <input type="color" id="color-picker" value="#000000">
-            <label for="line-width">Line Width:</label>
-            <input type="range" id="line-width" min="1" max="10" value="3">
-            <button onclick="clearWhiteboard()">Clear</button>
-        </div>
-        <canvas id="whiteboard"></canvas>
-    </div>
-
     <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'block';
+            }
+        }
+
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -465,58 +480,6 @@
         }
 
         window.onload = loadNotes;
-
-        // Whiteboard Functionality
-        const canvas = document.getElementById('whiteboard');
-        const ctx = canvas.getContext('2d');
-        let drawing = false;
-        let currentColor = document.getElementById('color-picker').value;
-        let lineWidth = document.getElementById('line-width').value;
-
-        canvas.width = canvas.parentElement.offsetWidth;
-        canvas.height = canvas.parentElement.offsetHeight;
-
-        canvas.addEventListener('mousedown', () => {
-            drawing = true;
-        });
-
-        canvas.addEventListener('mouseup', () => {
-            drawing = false;
-            ctx.beginPath();
-        });
-
-        canvas.addEventListener('mousemove', draw);
-
-        function draw(event) {
-            if (!drawing) return;
-
-            ctx.lineWidth = lineWidth;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = currentColor;
-
-            ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-        }
-
-        document.getElementById('color-picker').addEventListener('input', (event) => {
-            currentColor = event.target.value;
-        });
-
-        document.getElementById('line-width').addEventListener('input', (event) => {
-            lineWidth = event.target.value;
-        });
-
-        function clearWhiteboard() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
-        window.addEventListener('resize', () => {
-            canvas.width = canvas.parentElement.offsetWidth;
-            canvas.height = canvas.parentElement.offsetHeight;
-            clearWhiteboard(); // Clear canvas on resize to prevent distortions
-        });
 
         // Animation Keyframes
         const style = document.createElement('style');
