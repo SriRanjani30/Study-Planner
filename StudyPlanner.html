@@ -35,7 +35,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            width: 400px;
+            width: 500px;
             height: 600px;
             text-align: center;
             position: relative;
@@ -241,6 +241,22 @@
             width: 100%;
             height: 100%;
         }
+
+        .toolbar {
+            margin-bottom: 10px;
+        }
+
+        .toolbar label {
+            margin-right: 10px;
+        }
+
+        .toolbar input[type="color"], .toolbar input[type="range"] {
+            margin-right: 10px;
+        }
+
+        .toolbar button {
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body class="theme-light">
@@ -291,14 +307,14 @@
 
         <!-- Notes Section -->
         <div class="section" id="notes-section">
-            <h2>Notes</h2>
-            <textarea id="notes" placeholder="Enter your notes here" rows="4"></textarea>
+            <h2>Study Notes</h2>
+            <textarea id="notes" placeholder="Enter your study notes" rows="5"></textarea>
             <button onclick="saveNotes()">Save Notes</button>
         </div>
 
-        <!-- Theme Selector Section -->
+        <!-- Theme Selector -->
         <div class="section" id="theme-selector">
-            <label>Select Theme:</label>
+            <label for="theme">Select Theme:</label>
             <select id="theme" onchange="changeTheme(event)">
                 <option value="theme-light">Light</option>
                 <option value="theme-dark">Dark</option>
@@ -327,6 +343,13 @@
     <!-- Whiteboard Section -->
     <div class="whiteboard-container">
         <h2>Whiteboard</h2>
+        <div class="toolbar">
+            <label for="color-picker">Color:</label>
+            <input type="color" id="color-picker" value="#000000">
+            <label for="line-width">Line Width:</label>
+            <input type="range" id="line-width" min="1" max="10" value="3">
+            <button onclick="clearWhiteboard()">Clear</button>
+        </div>
         <canvas id="whiteboard"></canvas>
     </div>
 
@@ -447,6 +470,8 @@
         const canvas = document.getElementById('whiteboard');
         const ctx = canvas.getContext('2d');
         let drawing = false;
+        let currentColor = document.getElementById('color-picker').value;
+        let lineWidth = document.getElementById('line-width').value;
 
         canvas.width = canvas.parentElement.offsetWidth;
         canvas.height = canvas.parentElement.offsetHeight;
@@ -465,9 +490,9 @@
         function draw(event) {
             if (!drawing) return;
 
-            ctx.lineWidth = 3;
+            ctx.lineWidth = lineWidth;
             ctx.lineCap = 'round';
-            ctx.strokeStyle = '#000';
+            ctx.strokeStyle = currentColor;
 
             ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
             ctx.stroke();
@@ -475,9 +500,22 @@
             ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
         }
 
+        document.getElementById('color-picker').addEventListener('input', (event) => {
+            currentColor = event.target.value;
+        });
+
+        document.getElementById('line-width').addEventListener('input', (event) => {
+            lineWidth = event.target.value;
+        });
+
+        function clearWhiteboard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
         window.addEventListener('resize', () => {
             canvas.width = canvas.parentElement.offsetWidth;
             canvas.height = canvas.parentElement.offsetHeight;
+            clearWhiteboard(); // Clear canvas on resize to prevent distortions
         });
 
         // Animation Keyframes
